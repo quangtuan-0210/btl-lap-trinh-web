@@ -2,12 +2,10 @@
 async function loadMenu() {
     try {
         const category = document.getElementById('category-filter')?.value || '';
-        const keyword = document.getElementById('search-input')?.value || '';
+        const keyword = document.getElementById('search-input')?.value.toLowerCase() || '';
 
+        // SỬA Ở ĐÂY: Gọi đúng API menu của Backend
         let url = '/api/admin/menu';
-
-        if (category) url += `category=${category}&`;
-        if (keyword) url += `keyword=${keyword}`;
 
         // Gọi apiFetch (nó lấy chung hàm đã khai báo bên table.js)
         const products = await apiFetch(url) || [];
@@ -16,13 +14,15 @@ async function loadMenu() {
         grid.innerHTML = '';
 
         products
-            .filter(p => p.active === true)
+            .filter(p => p.active === true) // 1. Chỉ hiển thị món đang bán
+            .filter(p => category === '' || p.category === category) // 2. Lọc theo Loại món (Cơm, Bún...)
+            .filter(p => keyword === '' || p.tenMon.toLowerCase().includes(keyword)) // 3. Lọc theo Tên món gõ vào
             .forEach(p => {
                 const div = document.createElement('div');
                 div.className = 'food-card';
 
                 div.innerHTML = `
-                    <img src="${p.imageUrl || ''}">
+                    <img src="${p.imageUrl || ''}" onerror="this.src='https://via.placeholder.com/150'">
                     <p>${p.tenMon}</p>
                     <small>${p.gia.toLocaleString()}đ</small>
                 `;
