@@ -8,6 +8,7 @@ import com.restaurant.repository.CTHDRepository;
 import com.restaurant.repository.MonAnRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -78,5 +79,8 @@ public class MonAnService {
                 .imageUrl(mon.getImageUrl())
                 .active(mon.getActive())
                 .build();
+    }
+    public List<Object[]> getTop5MonAn() {
+        return cthdRepository.findTopMonAn(PageRequest.of(0, 5));
     }
 }

@@ -9,11 +9,22 @@
     <link rel="stylesheet" th:href="@{/css/admin.css}"/>
 </head>
 <body>
-
-<!-- ===== ADMIN LAYOUT ===== -->
+<script>
+    (function() {
+        const savedUser = sessionStorage.getItem('posUser');
+        if (!savedUser) {
+            window.location.href = '/login';
+            return;
+        }
+        const user = JSON.parse(savedUser);
+        if (user.role !== 'ADMIN') {
+            alert("Bạn không có quyền truy cập trang quản trị!");
+            window.location.href = '/login';
+        }
+    })();
+</script>
 <div class="admin-layout">
 
-    <!-- ======== SIDEBAR ======== -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
             <span class="sidebar-icon">🍽️</span>
@@ -49,10 +60,8 @@
         </nav>
     </aside>
 
-    <!-- ======== MAIN ======== -->
     <main class="main">
 
-        <!-- TOPBAR -->
         <div class="topbar">
             <div>
                 <h2 id="pageTitle" style="font-size:20px;font-weight:700;">Dashboard</h2>
@@ -67,7 +76,6 @@
             </div>
         </div>
 
-        <!-- ========== PAGE: DASHBOARD ========== -->
         <section class="page active" id="page-dashboard">
             <div class="cards" id="dashCards">
                 <div class="card stat-card stat-blue">
@@ -94,22 +102,21 @@
 
             <div class="section-box">
                 <div class="section-header">
-                    <h3>Món ăn gần đây</h3>
+                    <h3>🔥 Top 5 món ăn được gọi nhiều nhất</h3>
                 </div>
                 <table id="dashMonAnTable">
                     <thead>
-                        <tr>
-                            <th>#</th><th>Tên món</th><th>Giá</th><th>Trạng thái</th>
-                        </tr>
+                    <tr>
+                        <th>#</th><th>Tên món</th><th>Tổng số lượt</th><th>Trạng thái</th>
+                    </tr>
                     </thead>
                     <tbody id="dashMonAnBody">
-                        <tr><td colspan="4">Đang tải...</td></tr>
+                    <tr><td colspan="4">Đang tải...</td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- ========== PAGE: MÓN ĂN ========== -->
         <section class="page" id="page-monan">
             <div class="section-box">
                 <div class="section-header">
@@ -117,30 +124,28 @@
                     <button class="btn-primary" onclick="openMonAnModal()">+ Thêm món</button>
                 </div>
 
-                <!-- Search -->
                 <div class="search-bar">
                     <input type="text" id="searchMonAn" class="form-input" placeholder="🔍 Tìm kiếm món ăn..." oninput="filterMonAn()"/>
                 </div>
 
                 <table>
                     <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tên món</th>
-                            <th>Giá (VNĐ)</th>
-                            <th>Trạng thái</th>
-                            <th>Thao tác</th>
-                        </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên món</th>
+                        <th>Giá (VNĐ)</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
                     </thead>
                     <tbody id="monAnBody">
-                        <tr><td colspan="5">Đang tải...</td></tr>
+                    <tr><td colspan="5">Đang tải...</td></tr>
                     </tbody>
                 </table>
                 <div class="pagination" id="monAnPagination"></div>
             </div>
         </section>
 
-        <!-- ========== PAGE: NHÂN VIÊN ========== -->
         <section class="page" id="page-nhanvien">
             <div class="section-box">
                 <div class="section-header">
@@ -154,22 +159,21 @@
 
                 <table>
                     <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Vai trò</th>
-                            <th>Thao tác</th>
-                        </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Vai trò</th>
+                        <th>Thao tác</th>
+                    </tr>
                     </thead>
                     <tbody id="nhanVienBody">
-                        <tr><td colspan="6">Đang tải...</td></tr>
+                    <tr><td colspan="6">Đang tải...</td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- ========== PAGE: HÓA ĐƠN ========== -->
         <section class="page" id="page-hoadon">
             <div class="section-box">
                 <div class="section-header">
@@ -182,33 +186,26 @@
 
                 <table>
                     <thead>
-                        <tr>
-                            <th>Mã HD</th>
-                            <th>Bàn</th>
-                            <th>Thời điểm mở</th>
-                            <th>Thời điểm TT</th>
-                            <th>Tổng tiền</th>
-                            <th>Trạng thái</th>
-                            <th>Chi tiết</th>
-                        </tr>
+                    <tr>
+                        <th>Mã HD</th>
+                        <th>Bàn</th>
+                        <th>Thời điểm mở</th>
+                        <th>Thời điểm TT</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Chi tiết</th>
+                    </tr>
                     </thead>
                     <tbody id="hoaDonBody">
-                        <tr><td colspan="7">Đang tải...</td></tr>
+                    <tr><td colspan="7">Đang tải...</td></tr>
                     </tbody>
                 </table>
 
-                <!-- Pagination -->
                 <div class="pagination" id="hdPagination"></div>
             </div>
         </section>
 
-    </main><!-- /main -->
-</div><!-- /admin-layout -->
-
-<!-- ====================================================
-     MODAL: MÓN ĂN
-==================================================== -->
-<div class="modal-overlay" id="modalMonAn">
+    </main></div><div class="modal-overlay" id="modalMonAn">
     <div class="modal">
         <div class="modal-title" id="modalMonAnTitle">Thêm món ăn</div>
 
@@ -241,9 +238,6 @@
     </div>
 </div>
 
-<!-- ====================================================
-     MODAL: NHÂN VIÊN
-==================================================== -->
 <div class="modal-overlay" id="modalNhanVien">
     <div class="modal">
         <div class="modal-title" id="modalNhanVienTitle">Thêm nhân viên</div>
@@ -277,9 +271,6 @@
     </div>
 </div>
 
-<!-- ====================================================
-     MODAL: XÁC NHẬN XÓA
-==================================================== -->
 <div class="modal-overlay" id="modalDelete">
     <div class="modal" style="max-width:380px;text-align:center;">
         <div style="font-size:40px;margin-bottom:12px;">⚠️</div>
@@ -292,9 +283,6 @@
     </div>
 </div>
 
-<!-- ====================================================
-     MODAL: CHI TIẾT HÓA ĐƠN
-==================================================== -->
 <div class="modal-overlay" id="modalHoaDon">
     <div class="modal" style="width:500px;max-width:95vw;">
         <div class="modal-title">Chi tiết hóa đơn</div>
@@ -305,7 +293,6 @@
     </div>
 </div>
 
-<!-- TOAST -->
 <div id="toastContainer"></div>
 
 <script th:src="@{/js/admin.js}"></script>

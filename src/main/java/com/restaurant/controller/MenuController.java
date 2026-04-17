@@ -55,4 +55,10 @@ public class MenuController {
                 .result(null)
                 .build();
     }
+    @GetMapping("/top-5")
+    public ApiResponse<List<Object[]>> getTop5MonAn() {
+        return ApiResponse.<List<Object[]>>builder()
+                .result(service.getTop5MonAn())
+                .build();
+    }
 }

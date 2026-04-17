@@ -6,6 +6,20 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
+<script>
+    (function() {
+        const savedUser = sessionStorage.getItem('posUser');
+        if (!savedUser) {
+            window.location.href = '/login';
+            return;
+        }
+        const user = JSON.parse(savedUser);
+        // Cả STAFF và ADMIN đều có thể dùng máy POS
+        if (user.role !== 'STAFF' && user.role !== 'ADMIN') {
+            window.location.href = '/login';
+        }
+    })();
+</script>
 <div class="container">
     <div class="panel">
         <h3>Sơ đồ bàn</h3>

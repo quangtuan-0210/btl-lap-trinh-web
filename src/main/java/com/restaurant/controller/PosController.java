@@ -8,6 +8,7 @@ import com.restaurant.entity.HoaDon;
 import com.restaurant.exception.ErrorCode;
 import com.restaurant.service.PosService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/pos")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
 public class PosController {
 
     private final PosService service;
