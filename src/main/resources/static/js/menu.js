@@ -4,7 +4,7 @@ async function loadMenu() {
         const category = document.getElementById('category-filter')?.value || '';
         const keyword = document.getElementById('search-input')?.value || '';
 
-        let url = '/api/pos/mon-an?';
+        let url = '/api/admin/menu';
 
         if (category) url += `category=${category}&`;
         if (keyword) url += `keyword=${keyword}`;
