@@ -26,13 +26,16 @@ public class MonAnService {
         mon.setGia(request.getGia());
         mon.setActive(request.getActive());
         mon.setImageUrl(request.getImageUrl());
-
+        mon.setCategory(request.getCategory());
         repository.save(mon);
 
         return MonAnResponse.builder()
                 .id(mon.getId())
                 .tenMon(mon.getTenMon())
                 .gia(mon.getGia())
+                .imageUrl(mon.getImageUrl())
+                .active(mon.getActive())
+                .category(mon.getCategory()) // Đã thêm
                 .build();
     }
 
@@ -44,6 +47,7 @@ public class MonAnService {
                         .gia(mon.getGia())
                         .imageUrl(mon.getImageUrl())
                         .active(mon.getActive())
+                        .category(mon.getCategory())
                         .build())
                 .toList();
     }
@@ -69,6 +73,7 @@ public class MonAnService {
         mon.setGia(request.getGia());
         mon.setActive(request.getActive());
         mon.setImageUrl(request.getImageUrl());
+        mon.setCategory(request.getCategory());
 
         repository.save(mon);
 
@@ -78,8 +83,10 @@ public class MonAnService {
                 .gia(mon.getGia())
                 .imageUrl(mon.getImageUrl())
                 .active(mon.getActive())
+                .category(mon.getCategory())
                 .build();
     }
+
     public List<Object[]> getTop5MonAn() {
         return cthdRepository.findTopMonAn(PageRequest.of(0, 5));
     }

@@ -12,5 +12,6 @@ public class MonAnResponse {
     private String tenMon;
     private Double gia;
     private String imageUrl;
+    private String category;
     private Boolean active;
 }
