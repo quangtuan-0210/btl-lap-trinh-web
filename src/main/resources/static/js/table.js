@@ -1,50 +1,34 @@
 /* =====================================================
-   HÀM CALL API DÙNG CHUNG (Tự động kèm Token & Bóc JSON)
+   HÀM CALL API DÙNG CHUNG CHO THU NGÂN
 ===================================================== */
 async function apiFetch(url, options = {}) {
     const user = JSON.parse(sessionStorage.getItem('posUser'));
     const token = user ? user.token : null;
-
-    const headers = {
-        'Content-Type': 'application/json',
-        ...options.headers
-    };
-
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
+    const headers = { 'Content-Type': 'application/json', ...options.headers };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
 
     const response = await fetch(url, { ...options, headers });
-
     if (response.status === 401 || response.status === 403) {
         alert("Phiên đăng nhập hết hạn hoặc bạn không có quyền!");
         sessionStorage.removeItem('posUser');
         window.location.href = '/login';
         throw new Error('Unauthorized');
     }
-
     const data = await response.json().catch(() => null);
-
-    if (!response.ok) {
-        throw new Error(data?.message || `HTTP ${response.status}`);
-    }
-
+    if (!response.ok) throw new Error(data?.message || `HTTP ${response.status}`);
     return data?.result !== undefined ? data.result : data;
 }
 
-// =====================================================
-// PHẦN LOGIC THU NGÂN
-// =====================================================
+// -----------------------------------------------------
 
 let currentTableId = null;
 let currentHoaDonId = null;
 let isOpeningTable = false;
 
-// ===== 1. LOAD DANH SÁCH BÀN =====
+// Load ds bàn
 async function loadTables() {
     try {
-        const tables = await apiFetch('/api/pos/ban'); // SỬA: Thay fetch bằng apiFetch
-
+        const tables = await apiFetch('/api/pos/ban');
         const grid = document.getElementById('table-grid');
         grid.innerHTML = '';
 
@@ -55,7 +39,6 @@ async function loadTables() {
 
             div.onclick = async () => {
                 if (isOpeningTable) return;
-
                 isOpeningTable = true;
                 currentTableId = t.id;
                 currentHoaDonId = null;
@@ -64,9 +47,7 @@ async function loadTables() {
                 renderBill([]);
 
                 try {
-                    // SỬA: apiFetch tự bóc data.result rồi nên ta lấy thẳng kết quả
                     const result = await apiFetch(`/api/pos/mo-ban/${t.id}`, { method: 'POST' });
-
                     if (result) {
                         currentHoaDonId = result.id;
                         if (t.trangThai === 'CO_KHACH') {
@@ -82,30 +63,29 @@ async function loadTables() {
             grid.appendChild(div);
         });
     } catch (e) {
-        console.error("Lỗi tải danh sách bàn:", e);
+        console.error("Lỗi load bàn", e);
     }
 }
 
-// ===== 2. LOAD BILL =====
+// Load bill
 async function loadBillFromServer() {
     if (!currentHoaDonId) return;
     try {
-        const result = await apiFetch(`/api/pos/hoa-don/${currentHoaDonId}`); // SỬA: Gọi ngắn gọn hơn
+        const result = await apiFetch(`/api/pos/hoa-don/${currentHoaDonId}`);
         renderBill(result || []);
     } catch (e) {
-        console.error("Lỗi tải hóa đơn:", e);
+        console.error("Lỗi load hóa đơn", e);
     }
 }
 
-// ===== 3. THÊM MÓN =====
+// Thêm món
 async function addToBill(product) {
     if (isOpeningTable || !currentHoaDonId) {
         alert("Vui lòng chọn bàn trước!");
         return;
     }
-
     try {
-        await apiFetch('/api/pos/goi-mon', { // SỬA: Dùng apiFetch
+        await apiFetch('/api/pos/goi-mon', {
             method: 'POST',
             body: JSON.stringify({
                 hoaDonId: currentHoaDonId,
@@ -113,44 +93,42 @@ async function addToBill(product) {
                 soLuong: 1
             })
         });
-
-        // apiFetch sẽ tự ném lỗi nếu hỏng, nếu code chạy xuống đây tức là thành công
         await loadBillFromServer();
         await loadTables();
     } catch (e) {
-        alert("Lỗi thêm món: " + e.message);
+        alert("Lỗi thêm món!");
     }
 }
 
-// ===== 4. GIẢM SỐ LƯỢNG / XÓA MÓN =====
+// Giảm/ xóa món
 async function changeQuantity(cthdId, newQuantity) {
     if (newQuantity <= 0) {
         await removeItem(cthdId);
         return;
     }
     try {
-        await apiFetch('/api/pos/cap-nhat-so-luong', { // SỬA: Dùng apiFetch
+        await apiFetch('/api/pos/cap-nhat-so-luong', {
             method: 'POST',
             body: JSON.stringify({ cthdId: cthdId, soLuong: newQuantity })
         });
         await loadBillFromServer();
     } catch (e) {
-        alert("Lỗi cập nhật số lượng!");
+        console.error(e);
     }
 }
 
 async function removeItem(cthdId) {
     if (!confirm("Bạn muốn xóa món này?")) return;
     try {
-        await apiFetch(`/api/pos/xoa-mon/${cthdId}`, { method: 'DELETE' }); // SỬA
+        await apiFetch(`/api/pos/xoa-mon/${cthdId}`, { method: 'DELETE' });
         await loadBillFromServer();
         await loadTables();
-    } catch (e) {
-        alert("Lỗi xóa món!");
+    } catch(e) {
+        alert("Lỗi xóa món");
     }
 }
 
-// ===== 5. RENDER BILL =====
+// Lập hóa đơn
 function renderBill(items) {
     const body = document.getElementById('bill-items-body');
     let total = 0;
@@ -186,18 +164,17 @@ function renderBill(items) {
     document.getElementById('total-price').innerText = total.toLocaleString() + 'đ';
 }
 
-// ===== 6. THANH TOÁN =====
+//Thanh toán
 async function handlePayment() {
     if (!currentHoaDonId || isOpeningTable) return;
     if (!confirm("Xác nhận thanh toán?")) return;
-
     try {
-        await apiFetch(`/api/pos/thanh-toan/${currentHoaDonId}`, { method: 'POST' }); // SỬA
+        await apiFetch(`/api/pos/thanh-toan/${currentHoaDonId}`, { method: 'POST' });
         alert("Thanh toán xong!");
         currentHoaDonId = null;
         renderBill([]);
         await loadTables();
     } catch (e) {
-        alert("Lỗi thanh toán: " + e.message);
+        alert("Lỗi thanh toán");
     }
 }
