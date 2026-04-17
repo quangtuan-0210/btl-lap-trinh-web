@@ -6,48 +6,82 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
+
+<!-- ✅ CHECK LOGIN -->
 <script>
-    (function() {
-        const savedUser = sessionStorage.getItem('posUser');
-        if (!savedUser) {
-            window.location.href = '/login';
-            return;
-        }
-        const user = JSON.parse(savedUser);
-        // Cả STAFF và ADMIN đều có thể dùng máy POS
-        if (user.role !== 'STAFF' && user.role !== 'ADMIN') {
-            window.location.href = '/login';
-        }
-    })();
+    const user = sessionStorage.getItem('posUser');
+    if (!user) {
+        window.location.href = '/login';
+    }
 </script>
+
+<button onclick="logout()" class="btn-logout">Đăng xuất</button>
+
 <div class="container">
+
+    <!-- ===== BÀN ===== -->
     <div class="panel">
         <h3>Sơ đồ bàn</h3>
         <div id="table-grid" class="grid"></div>
     </div>
 
+    <!-- ===== MENU ===== -->
     <div class="panel">
         <h3>Menu món ăn</h3>
+
+        <!-- 🔥 FILTER + SEARCH (MỚI) -->
+        <div class="menu-filter" style="margin-bottom: 10px; display:flex; gap:10px;">
+            <select id="category-filter">
+                <option value="">Tất cả</option>
+                <option value="COM">Cơm</option>
+                <option value="BUN_PHO">Bún/Phở</option>
+                <option value="BANH_MI">Bánh mì</option>
+                <option value="LAU_NUONG">Lẩu/Nướng</option>
+                <option value="DO_UONG">Đồ uống</option>
+                <option value="AN_VAT">Ăn vặt</option>
+                <option value="TRANG_MIENG">Tráng miệng</option>
+            </select>
+
+            <input
+                    type="text"
+                    id="search-input"
+                    placeholder="Tìm món..."
+                    style="flex:1; padding:5px;"
+            >
+        </div>
+
+        <!-- GRID MENU -->
         <div id="menu-grid" class="grid"></div>
     </div>
 
+    <!-- ===== HÓA ĐƠN ===== -->
     <div class="panel bill-panel">
         <h3>Hóa đơn: <span id="current-table-name">...</span></h3>
+
         <div class="bill-list">
             <table id="bill-table">
                 <thead>
-                <tr><th>Món</th><th>SL</th><th>Giá</th><th>Tổng</th></tr>
+                <tr>
+                    <th>Món</th>
+                    <th>SL</th>
+                    <th>Giá</th>
+                    <th>Tổng</th>
+                    <th></th>
+                </tr>
                 </thead>
                 <tbody id="bill-items-body"></tbody>
             </table>
         </div>
+
         <div class="bill-footer">
             <h4>Tổng: <span id="total-price">0đ</span></h4>
             <button onclick="handlePayment()" class="btn-pay">Thanh toán</button>
         </div>
     </div>
+
 </div>
 
+<!-- ===== SCRIPT ===== -->
 <script th:src="@{/js/table.js}"></script>
 <script th:src="@{/js/menu.js}"></script>
 
@@ -56,6 +90,15 @@
         loadTables();
         loadMenu();
     };
+
+    function logout() {
+        fetch('/api/auth/logout', { method: 'POST' })
+        .then(() => {
+            sessionStorage.removeItem('posUser');
+            window.location.href = '/login';
+        });
+    }
 </script>
+
 </body>
 </html>

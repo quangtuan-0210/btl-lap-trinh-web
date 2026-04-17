@@ -1,45 +1,21 @@
-'use strict';
-
 /* =====================================================
-   HÀM CALL API DÙNG CHUNG (Đã tích hợp Token)
+   admin.js  –  Restaurant POS Admin SPA
+   Gọi REST API backend:
+     POST   /api/auth/login
+     POST   /api/auth/logout
+     GET    /api/admin/menu
+     POST   /api/admin/menu
+     DELETE /api/admin/menu/{id}
+     GET    /api/nhan-vien
+     POST   /api/nhan-vien
+     PUT    /api/nhan-vien/{id}
+     DELETE /api/nhan-vien/{id}
+     GET    /api/pos/ban
+     GET    /api/pos/hoa-don        (lịch sử)
+     GET    /api/pos/hoa-don/{id}   (chi tiết)
 ===================================================== */
-async function apiFetch(url, options = {}) {
-    const user = JSON.parse(sessionStorage.getItem('posUser'));
-    const token = user ? user.token : null;
 
-    const headers = {
-        'Content-Type': 'application/json',
-        ...options.headers
-    };
-
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(url, { ...options, headers });
-
-    if (response.status === 401 || response.status === 403) {
-        alert("Phiên đăng nhập hết hạn hoặc bạn không có quyền!");
-        sessionStorage.removeItem('posUser');
-        window.location.href = '/login';
-        throw new Error('Unauthorized');
-    }
-
-    const data = await response.json().catch(() => null);
-
-    if (!response.ok) {
-        throw new Error(data?.message || `HTTP ${response.status}`);
-    }
-
-    return data?.result !== undefined ? data.result : data;
-}
-
-async function apiPost(url, body) {
-    return apiFetch(url, {
-        method : 'POST',
-        body   : JSON.stringify(body)
-    });
-}
+'use strict';
 
 /* ─── STATE ─────────────────────────────────────────── */
 const state = {
@@ -54,7 +30,7 @@ const state = {
     monAnSize: 20
 };
 
-/* ─── KHỞI TẠO ──────────────────────────────────────── */
+/*Khởi tạo*/
 document.addEventListener('DOMContentLoaded', () => {
     // Kiểm tra session
     const saved = sessionStorage.getItem('posUser');
@@ -84,9 +60,11 @@ const PAGE_META = {
 };
 
 function switchPage(name, el) {
+    // Ẩn tất cả page
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
+    // Hiện page được chọn
     document.getElementById('page-' + name).classList.add('active');
     if (el) el.classList.add('active');
 
@@ -104,11 +82,14 @@ async function loadDashboard() {
 }
 
 async function loadMonAnForDash() {
+    // vẫn lấy tổng số món ăn cho card
     const allFoods = await apiFetch('/api/admin/menu');
     state.monAn = allFoods || [];
     document.getElementById('statMonAn').textContent = state.monAn.length;
 
-    const list = await apiFetch('/api/admin/menu/top-5').catch(() => []);
+    // gọi API top 5 món bán chạy
+    const list = await apiFetch('/api/admin/menu/top-5');
+
     const body = document.getElementById('dashMonAnBody');
 
     const rows = (list || []).map((m, i) => `
@@ -124,25 +105,25 @@ async function loadMonAnForDash() {
 }
 
 async function loadNhanVienForDash() {
-    const list = await apiFetch('/api/nhan-vien').catch(() => []);
+    const list = await apiFetch('/api/nhan-vien');
     state.nhanVien = list || [];
     document.getElementById('statNhanVien').textContent = state.nhanVien.length;
 }
 
 async function loadHoaDonForDash() {
-    const list = await apiFetch('/api/pos/hoa-don').catch(() => []);
+    const list = await apiFetch('/api/pos/hoa-don');
     const all  = list || [];
+    // Hóa đơn đã thanh toán hôm nay
     const today = new Date().toDateString();
     const hd    = all.filter(h => h.thoiDiemThanhToan && new Date(h.thoiDiemThanhToan).toDateString() === today);
     const total = hd.reduce((s, h) => s + (h.tongTien || 0), 0);
-
     document.getElementById('statHoaDon').textContent   = hd.length;
     document.getElementById('statDoanhThu').textContent = fmtVnd(total);
 }
 
 /* ─── MÓN ĂN ─────────────────────────────────────────── */
 async function loadMonAn() {
-    const list = await apiFetch('/api/admin/menu').catch(() => []);
+    const list = await apiFetch('/api/admin/menu');
     state.monAn = list || [];
     state.monAnPage = 0;
     renderMonAnTable();
@@ -176,16 +157,20 @@ function renderMonAnTable(data = null) {
 
     renderMonAnPagination(source);
 }
-
 function renderMonAnPagination(data = null) {
     const source = data || state.monAn;
     const totalPages = Math.ceil(source.length / state.monAnSize);
     const pg = document.getElementById('monAnPagination');
 
     if (!pg) return;
-    if (totalPages <= 1) { pg.innerHTML = ''; return; }
+
+    if (totalPages <= 1) {
+        pg.innerHTML = '';
+        return;
+    }
 
     let html = '';
+
     for (let i = 0; i < totalPages; i++) {
         html += `
             <button class="page-btn ${i === state.monAnPage ? 'active' : ''}"
@@ -194,6 +179,7 @@ function renderMonAnPagination(data = null) {
             </button>
         `;
     }
+
     pg.innerHTML = html;
 }
 
@@ -204,10 +190,12 @@ function goMonAnPage(page) {
 
 function filterMonAn() {
     const q = document.getElementById('searchMonAn').value.toLowerCase();
+
     const data = state.monAn.filter(m =>
         m.tenMon.toLowerCase().includes(q) ||
         String(m.id).includes(q)
     );
+
     state.monAnPage = 0;
     renderMonAnTable(data);
 }
@@ -218,10 +206,15 @@ function openMonAnModal(mon = null) {
     document.getElementById('gia').value = mon ? mon.gia : '';
     document.getElementById('imageUrl').value = mon ? (mon.imageUrl || '') : '';
     document.getElementById('monAnActive').value = mon ? String(mon.active) : 'true';
-    document.getElementById('modalMonAnTitle').textContent = mon ? 'Cập nhật món ăn' : 'Thêm món ăn';
+
+    document.getElementById('category').value =
+        mon ? (mon.category || 'COM') : 'COM';
+
+    document.getElementById('modalMonAnTitle').textContent =
+        mon ? 'Cập nhật món ăn' : 'Thêm món ăn';
+
     openModal('modalMonAn');
 }
-
 function editMonAn(id) {
     const mon = state.monAn.find(m => m.id === id);
     if (mon) openMonAnModal(mon);
@@ -233,19 +226,25 @@ async function submitMonAn() {
     const gia    = parseFloat(document.getElementById('gia').value);
     const active = document.getElementById('monAnActive').value === 'true';
     const imageUrl = document.getElementById('imageUrl').value.trim();
+    const category = document.getElementById('category').value;
 
     if (!tenMon || isNaN(gia) || gia < 0) {
         toast('Vui lòng điền đầy đủ thông tin hợp lệ.', 'error'); return;
     }
 
-    const body = { tenMon, gia, active, imageUrl };
+    const body = { tenMon, gia, active, imageUrl, category };
 
+    // Backend chưa expose PUT /api/admin/menu/{id} — chỉ có POST và DELETE
+    // => Khi "sửa": xóa rồi tạo lại (workaround đến khi backend bổ sung PUT)
     try {
         if (id) {
-            await apiFetch(`/api/admin/menu/${id}`, {
+            // Cố gắng PUT trước (nếu backend thêm sau)
+            const r = await fetch(`/api/admin/menu/${id}`, {
                 method : 'PUT',
+                headers: {'Content-Type': 'application/json'},
                 body   : JSON.stringify(body)
             });
+            if (!r.ok) throw new Error('PUT not supported');
             toast('Cập nhật món ăn thành công!', 'success');
         } else {
             await apiPost('/api/admin/menu', body);
@@ -274,12 +273,16 @@ function confirmDeleteMonAn(id, name) {
 }
 
 /* ─── NHÂN VIÊN ──────────────────────────────────────── */
+/* ─── NHÂN VIÊN ──────────────────────────────────────── */
 async function loadNhanVien() {
     try {
         const list = await apiFetch('/api/nhan-vien');
+        console.log("Danh sách nhân viên:", list);
+
         state.nhanVien = list || [];
         renderNhanVienTable(state.nhanVien);
     } catch (e) {
+        console.error("Lỗi load nhân viên:", e);
         toast("Không thể tải danh sách nhân viên", "error");
     }
 }
@@ -303,16 +306,18 @@ function renderNhanVienTable(data) {
             <button class="btn-action btn-del" onclick="confirmDeleteNhanVien(${nv.id}, '${esc(nv.username)}')">🗑 Xóa</button>
         </td>
     </tr>
-    `).join('');
+`).join('');
 }
 
 function filterNhanVien() {
     const q = document.getElementById('searchNhanVien').value.toLowerCase();
+
     const data = state.nhanVien.filter(nv =>
         nv.username.toLowerCase().includes(q) ||
         nv.email.toLowerCase().includes(q) ||
         (nv.role || '').toLowerCase().includes(q)
     );
+
     renderNhanVienTable(data);
 }
 
@@ -324,7 +329,8 @@ function openNhanVienModal(nv = null) {
     document.getElementById('nvRole').value = nv ? (nv.role || 'STAFF') : 'STAFF';
 
     document.getElementById('nvPasswordGroup').style.display = nv ? 'none' : 'block';
-    document.getElementById('modalNhanVienTitle').textContent = nv ? 'Cập nhật nhân viên' : 'Thêm nhân viên';
+    document.getElementById('modalNhanVienTitle').textContent =
+        nv ? 'Cập nhật nhân viên' : 'Thêm nhân viên';
 
     openModal('modalNhanVien');
 }
@@ -350,12 +356,18 @@ async function submitNhanVien() {
         return;
     }
 
-    const body = { username, email, password, role: document.getElementById('nvRole').value };
+    const body = {
+        username,
+        email,
+        password,
+        role: "STAFF"
+    };
 
     try {
         if (id) {
             await apiFetch(`/api/nhan-vien/${id}`, {
                 method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
             });
             toast('Cập nhật nhân viên thành công!', 'success');
@@ -372,10 +384,15 @@ async function submitNhanVien() {
 }
 
 function confirmDeleteNhanVien(id, name) {
-    document.getElementById('deleteMsg').textContent = `Bạn có chắc muốn xóa nhân viên "${name}"?`;
+    document.getElementById('deleteMsg').textContent =
+        `Bạn có chắc muốn xóa nhân viên "${name}"?`;
+
     document.getElementById('btnConfirmDelete').onclick = async () => {
         try {
-            await apiFetch(`/api/nhan-vien/${id}`, { method: 'DELETE' });
+            await apiFetch(`/api/nhan-vien/${id}`, {
+                method: 'DELETE'
+            });
+
             toast('Đã xóa nhân viên.', 'success');
             closeModal('modalDelete');
             await loadNhanVien();
@@ -383,6 +400,7 @@ function confirmDeleteNhanVien(id, name) {
             toast('Xóa thất bại: ' + e.message, 'error');
         }
     };
+
     openModal('modalDelete');
 }
 
@@ -392,7 +410,8 @@ async function loadHoaDon() {
     let url       = '/api/pos/hoa-don';
     if (dateVal) url += `?date=${dateVal}`;
 
-    const list   = await apiFetch(url).catch(() => []);
+    const list   = await apiFetch(url);
+    console.log("Hoa don:", list);
     state.hoaDon = list || [];
     state.hdPage = 0;
     renderHoaDonTable();
@@ -498,6 +517,7 @@ async function doLogout() {
 function openModal(id)  { document.getElementById(id).classList.add('show'); }
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
+// Đóng modal khi click overlay
 document.querySelectorAll('.modal-overlay').forEach(el => {
     el.addEventListener('click', e => {
         if (e.target === el) el.classList.remove('show');
@@ -512,6 +532,49 @@ function toast(msg, type = 'info') {
     t.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${msg}</span>`;
     document.getElementById('toastContainer').appendChild(t);
     setTimeout(() => t.remove(), 3500);
+}
+
+/* ─── API HELPERS ────────────────────────────────────── */
+async function apiFetch(url, options = {}) {
+    // Lấy thẻ JWT từ túi ra
+    const user = JSON.parse(sessionStorage.getItem('posUser'));
+    const token = user ? user.token : null;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers
+    };
+
+    // Đính kèm thẻ vào Header
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const res = await fetch(url, { ...options, headers });
+
+    // Nếu bị đuổi (hết hạn thẻ / sai quyền)
+    if (res.status === 401 || res.status === 403) {
+        alert("Phiên đăng nhập hết hạn hoặc bạn không có quyền!");
+        sessionStorage.removeItem('posUser');
+        window.location.href = '/login';
+        throw new Error('Unauthorized');
+    }
+
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok) {
+        throw new Error(data?.message || `HTTP ${res.status}`);
+    }
+
+    // Tự động bóc lớp vỏ result của Backend
+    return data?.result !== undefined ? data.result : data;
+}
+
+async function apiPost(url, body) {
+    return apiFetch(url, {
+        method : 'POST',
+        body   : JSON.stringify(body)
+    });
 }
 
 /* ─── FORMAT HELPERS ─────────────────────────────────── */
@@ -549,6 +612,7 @@ function badgeRole(role) {
         ADMIN: 'badge-info',
         STAFF: 'badge-warning',
     };
+
     return `<span class="badge ${map[role] || 'badge-gray'}">${role || '--'}</span>`;
 }
 
@@ -557,6 +621,95 @@ function badgeHdStatus(status) {
         DA_THANH_TOAN: ['badge-success', 'Đã thanh toán'],
         CHUA_THANH_TOAN: ['badge-warning', 'Chưa thanh toán']
     };
+
     const [cls, label] = map[status] || ['badge-gray', status || '--'];
     return `<span class="badge ${cls}">${label}</span>`;
+}
+let revenueChart;
+
+async function loadRevenueChart() {
+    const type = document.getElementById("chartType").value;
+
+    const all = await apiFetch('/api/pos/hoa-don');
+    const hoaDon = all || [];
+
+    let labels = [];
+    let values = [];
+
+    if (type === "week") {
+        labels = [];
+        values = [];
+
+        const today = new Date();
+        const revenueMap = {};
+
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+
+            const key = d.toISOString().split("T")[0];
+            revenueMap[key] = 0;
+
+            const thu = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"][d.getDay()];
+            labels.push(thu);
+        }
+
+        hoaDon.forEach(hd => {
+            if (!hd.thoiDiemThanhToan) return;
+
+            const d = new Date(hd.thoiDiemThanhToan);
+            const key = d.toISOString().split("T")[0];
+
+            if (revenueMap.hasOwnProperty(key)) {
+                revenueMap[key] += hd.tongTien || 0;
+            }
+        });
+
+        values = Object.values(revenueMap);
+    }
+
+    if (type === "month") {
+        labels = ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"];
+        values = [0, 0, 0, 0];
+
+        const now = new Date();
+        const month = now.getMonth();
+        const year = now.getFullYear();
+
+        hoaDon.forEach(hd => {
+            if (!hd.thoiDiemThanhToan) return;
+
+            const d = new Date(hd.thoiDiemThanhToan);
+
+            if (d.getMonth() === month && d.getFullYear() === year) {
+                const week = Math.min(3, Math.floor((d.getDate() - 1) / 7));
+                values[week] += hd.tongTien || 0;
+            }
+        });
+    }
+
+    const ctx = document.getElementById("revenueChart");
+
+    if (revenueChart) revenueChart.destroy();
+
+    revenueChart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Doanh thu",
+                data: values,
+                tension: 0.4,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            }
+        }
+    });
 }
