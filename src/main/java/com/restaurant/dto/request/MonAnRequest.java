@@ -8,4 +8,6 @@ import lombok.Setter;
 public class MonAnRequest {
     private String tenMon;
     private Double gia;
+    private Boolean active;
+    private String imageUrl; // thêm dòng này
 }

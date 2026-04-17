@@ -25,6 +25,18 @@ public class MenuController {
                 .build();
     }
 
+    // ✅ THÊM API UPDATE
+    @PutMapping("/{id}")
+    public ApiResponse<MonAnResponse> update(
+            @PathVariable Long id,
+            @RequestBody MonAnRequest request) {
+        return ApiResponse.<MonAnResponse>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .message("Cập nhật thành công")
+                .result(service.update(id, request))
+                .build();
+    }
+
     @GetMapping
     public ApiResponse<List<MonAnResponse>> getAll() {
         return ApiResponse.<List<MonAnResponse>>builder()
@@ -41,6 +53,12 @@ public class MenuController {
                 .code(ErrorCode.SUCCESS.getCode())
                 .message("Xóa thành công")
                 .result(null)
+                .build();
+    }
+    @GetMapping("/top-5")
+    public ApiResponse<List<Object[]>> getTop5MonAn() {
+        return ApiResponse.<List<Object[]>>builder()
+                .result(service.getTop5MonAn())
                 .build();
     }
 }

@@ -4,12 +4,14 @@ import com.restaurant.dto.request.NguoiDungRequest;
 import com.restaurant.dto.response.NguoiDungResponse;
 import com.restaurant.service.NguoiDungService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/nhan-vien")
+@PreAuthorize("hasAuthority('ADMIN')")
 public class NhanVienController {
 
     @Autowired
