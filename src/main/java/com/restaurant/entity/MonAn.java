@@ -18,9 +18,11 @@ public class MonAn {
 
     private Double gia;
 
-    @Column(name = "image_url")
+    private Boolean active = true;
 
+    @Column(name = "image_url")
     private String imageUrl;
 
-    private Boolean active = true;
+    @Column(name = "category")
+    private String category;
 }
