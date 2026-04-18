@@ -2,11 +2,10 @@ spring:
   datasource:
     url: "jdbc:mysql://localhost:3306/restaurant_db?createDatabaseIfNotExist=true"
     username: root
-    password: 123
+    password: 3010200530102005
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-    open-in-view: false
   application:
     name: front-end
