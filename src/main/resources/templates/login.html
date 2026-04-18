@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Đăng nhập | Restaurant POS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+
+    <script>
+        const savedUser = sessionStorage.getItem('posUser');
+        if (savedUser) {
+            const user = JSON.parse(savedUser);
+            const role = user?.role?.trim().toUpperCase();
+
+            // Dùng replace() để khóa luôn nút Back (Quay lại) của trình duyệt
+            if (role === 'ADMIN') {
+                window.location.replace('/admin');
+            } else if (role === 'STAFF') {
+                window.location.replace('/cashier');
+            }
+        }
+    </script>
+</head>
+<body>
+
+<div class="login-page">
+    <div class="login-card">
+        <div style="text-align:center; margin-bottom: 24px;">
+            <div class="login-brand-icon">🍽️</div>
+            <div class="login-title">Restaurant POS</div>
+            <div class="login-subtitle">Đăng nhập hệ thống quản lý</div>
+        </div>
+
+        <div id="loginError" class="alert-error" style="display:none;">
+            <span id="loginErrorMsg">Email hoặc mật khẩu không đúng.</span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Tên đăng nhập</label>
+            <input id="username" type="text" class="form-input" placeholder="Nhập username..." autocomplete="username"/>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Mật khẩu</label>
+            <div style="position:relative;">
+                <input id="password" type="password" class="form-input" placeholder="Nhập mật khẩu..." autocomplete="current-password"/>
+                <span class="toggle-pw" onclick="togglePw()">👁</span>
+            </div>
+        </div>
+
+        <button class="btn-login" id="btnLogin" onclick="doLogin()">
+            <span id="btnLoginText">Đăng nhập</span>
+            <span id="btnLoginSpinner" style="display:none;">⏳ Đang xử lý...</span>
+        </button>
+    </div>
+</div>
+
+<script>
+    async function doLogin() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const errBox   = document.getElementById('loginError');
+        const errMsg   = document.getElementById('loginErrorMsg');
+        const btnText  = document.getElementById('btnLoginText');
+        const spinner  = document.getElementById('btnLoginSpinner');
+
+        if (!username || !password) {
+            errMsg.textContent = 'Vui lòng nhập đầy đủ tài khoản và mật khẩu.';
+            errBox.style.display = 'block';
+            return;
+        }
+
+        errBox.style.display = 'none';
+        btnText.style.display = 'none';
+        spinner.style.display = 'inline';
+
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await res.json();
+            console.log('DATA =', data);
+
+            if (data.code === 1000) {
+                const user = data.result;
+                const role = user?.role?.trim().toUpperCase();
+
+                sessionStorage.setItem('posUser', JSON.stringify(user));
+
+                // Dùng replace() ở đây luôn cho đồng bộ
+                if (role === 'ADMIN') {
+                    window.location.replace('/admin');
+                } else if (role === 'STAFF') {
+                    window.location.replace('/cashier');
+                } else {
+                    errMsg.textContent = 'Vai trò không hợp lệ.';
+                    errBox.style.display = 'block';
+                }
+
+            } else {
+                errMsg.textContent = data.message || 'Đăng nhập thất bại.';
+                errBox.style.display = 'block';
+            }
+
+        } catch (e) {
+            errMsg.textContent = 'Lỗi kết nối máy chủ.';
+            errBox.style.display = 'block';
+        } finally {
+            btnText.style.display = 'inline';
+            spinner.style.display = 'none';
+        }
+    }
+
+    function togglePw() {
+        const pw = document.getElementById('password');
+        pw.type = pw.type === 'password' ? 'text' : 'password';
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Enter') doLogin();
+    });
+</script>
+</body>
+</html>
