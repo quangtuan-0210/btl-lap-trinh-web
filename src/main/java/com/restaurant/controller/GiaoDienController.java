@@ -25,4 +25,9 @@ public class GiaoDienController {
     public String trangThuNgan() {
         return "cashier"; // Trỏ đúng tên file cashier.html
     }
+
+    @GetMapping("/order")
+    public String trangDatMon() {
+        return "order"; // Trang đặt món cho khách hàng
+    }
 }
