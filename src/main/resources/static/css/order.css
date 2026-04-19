@@ -259,6 +259,23 @@ html, body {
     background: linear-gradient(135deg, #231f1a, #1a1712);
 }
 
+/* ===== SUSPENDED LABEL ===== */
+.suspended-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.60);
+    color: #f5c842;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-radius: 0;
+    pointer-events: none;
+}
+
 .menu-card-body {
     padding: 16px;
 }

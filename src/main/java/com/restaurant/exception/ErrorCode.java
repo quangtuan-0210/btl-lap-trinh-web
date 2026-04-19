@@ -14,7 +14,8 @@ public enum ErrorCode {
     UNAUTHORIZED(1003, "Bạn không có quyền truy cập tính năng này"),
     MON_AN_NOT_FOUND(2001, "Không tìm thấy món ăn"),
     BAN_NOT_FOUND(2002, "Không tìm thấy bàn"),
-    HOA_DON_NOT_FOUND(2003, "Không tìm thấy hóa đơn");
+    HOA_DON_NOT_FOUND(2003, "Không tìm thấy hóa đơn"),
+    MON_AN_TAM_NGUNG(2004, "Món ăn đang tạm ngưng bán, quý khách xin vui lòng chọn món khác nhé");
 
     private final int code;
     private final String message;

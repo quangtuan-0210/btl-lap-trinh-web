@@ -99,6 +99,7 @@ function renderMenu(list) {
         card.className = 'menu-card';
         card.id = `card-${mon.id}`;
 
+        const isAvailable = mon.active !== false;
         const qtyInCart = cart[mon.id] ? cart[mon.id].soLuong : 0;
 
         card.innerHTML = `
@@ -106,6 +107,7 @@ function renderMenu(list) {
                 ${mon.imageUrl
                     ? `<img src="${mon.imageUrl}" alt="${mon.tenMon}" loading="lazy">`
                     : '🍽️'}
+                ${!isAvailable ? '<div class="suspended-label">Tạm ngưng bán</div>' : ''}
             </div>
             <div class="menu-card-qty ${qtyInCart > 0 ? 'show' : ''}" id="qty-badge-${mon.id}">
                 x${qtyInCart}
@@ -114,7 +116,9 @@ function renderMenu(list) {
                 <div class="menu-card-name">${mon.tenMon}</div>
                 <div class="menu-card-price">${formatPrice(mon.gia)}</div>
             </div>
-            <button class="menu-card-add" onclick="addToCart(${mon.id}, '${mon.tenMon.replace(/'/g, "\\'")}', ${mon.gia})">+</button>`;
+            ${isAvailable
+                ? `<button class="menu-card-add" onclick="addToCart(${mon.id}, '${mon.tenMon.replace(/'/g, "\\'")}', ${mon.gia})">+</button>`
+                : ''}`;
         grid.appendChild(card);
     });
 }
@@ -123,6 +127,12 @@ function renderMenu(list) {
 function addToCart(id, ten, gia) {
     if (!banId) {
         alert('Vui lòng chọn bàn trước khi đặt món!');
+        return;
+    }
+    // Phòng vệ: kiểm tra món có đang bán không
+    const monData = menuData.find(m => m.id === id);
+    if (monData && monData.active === false) {
+        showToast('Món ăn đang tạm ngưng bán, quý khách xin vui lòng chọn món khác nhé', false);
         return;
     }
     if (cart[id]) {
