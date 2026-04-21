@@ -12,6 +12,7 @@ public enum ErrorCode {
     USER_NOT_EXISTED(1001, "Tên đăng nhập không tồn tại"),
     UNAUTHENTICATED(1002, "Sai tài khoản hoặc mật khẩu"),
     UNAUTHORIZED(1003, "Bạn không có quyền truy cập tính năng này"),
+    USER_EXISTED(1001, "Tên đăng nhập đã tồn tại"),
     MON_AN_NOT_FOUND(2001, "Không tìm thấy món ăn"),
     BAN_NOT_FOUND(2002, "Không tìm thấy bàn"),
     HOA_DON_NOT_FOUND(2003, "Không tìm thấy hóa đơn"),
