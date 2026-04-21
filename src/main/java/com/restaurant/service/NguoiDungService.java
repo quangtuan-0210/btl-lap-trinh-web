@@ -38,7 +38,7 @@ public class NguoiDungService {
 
     public NguoiDungResponse createUser(NguoiDungRequest request) {
         if (nguoiDungRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+            throw new AppException(ErrorCode.USER_EXISTED);
         }
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
