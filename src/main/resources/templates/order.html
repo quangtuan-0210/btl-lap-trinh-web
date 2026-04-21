@@ -51,6 +51,28 @@
     <!-- Menu Grid -->
     <section class="menu-section">
         <p class="menu-section-title">Tất cả món ăn</p>
+
+        <div class="filter-bar">
+            <select id="category-filter" class="filter-btn">
+                <option value="">Tất cả</option>
+                <option value="COM">Cơm</option>
+                <option value="BUN_PHO">Bún/Phở</option>
+                <option value="BANH_MI">Bánh mì</option>
+                <option value="LAU_NUONG">Lẩu/Nướng</option>
+                <option value="DO_UONG">Đồ uống</option>
+                <option value="AN_VAT">Ăn vặt</option>
+                <option value="TRANG_MIENG">Tráng miệng</option>
+            </select>
+
+            <input
+                    type="text"
+                    id="search-input"
+                    placeholder="Tìm món..."
+                    class="filter-btn"
+                    style="flex:1"
+            >
+        </div>
+
         <div class="menu-grid" id="menu-grid">
             <p style="color:var(--text-muted)">Đang tải thực đơn...</p>
         </div>
