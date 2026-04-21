@@ -1,6 +1,3 @@
-/* =====================================================
-   HÀM CALL API DÙNG CHUNG CHO THU NGÂN
-===================================================== */
 async function apiFetch(url, options = {}) {
     const user = JSON.parse(sessionStorage.getItem('posUser'));
     const token = user ? user.token : null;
@@ -18,8 +15,6 @@ async function apiFetch(url, options = {}) {
     if (!response.ok) throw new Error(data?.message || `HTTP ${response.status}`);
     return data?.result !== undefined ? data.result : data;
 }
-
-// -----------------------------------------------------
 
 let currentTableId = null;
 let currentHoaDonId = null;

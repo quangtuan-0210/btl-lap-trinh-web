@@ -4,19 +4,17 @@ async function loadMenu() {
         const category = document.getElementById('category-filter')?.value || '';
         const keyword = document.getElementById('search-input')?.value.toLowerCase() || '';
 
-        // SỬA Ở ĐÂY: Gọi đúng API menu của Backend
         let url = '/api/admin/menu';
 
-        // Gọi apiFetch (nó lấy chung hàm đã khai báo bên table.js)
         const products = await apiFetch(url) || [];
 
         const grid = document.getElementById('menu-grid');
         grid.innerHTML = '';
 
         products
-            .filter(p => p.active === true) // 1. Chỉ hiển thị món đang bán
-            .filter(p => category === '' || p.category === category) // 2. Lọc theo Loại món (Cơm, Bún...)
-            .filter(p => keyword === '' || p.tenMon.toLowerCase().includes(keyword)) // 3. Lọc theo Tên món gõ vào
+            .filter(p => p.active === true) // đang bán
+            .filter(p => category === '' || p.category === category) // Lọc
+            .filter(p => keyword === '' || p.tenMon.toLowerCase().includes(keyword)) // Lọc gõ
             .forEach(p => {
                 const div = document.createElement('div');
                 div.className = 'food-card';
@@ -41,7 +39,7 @@ async function loadMenu() {
     }
 }
 
-/* ===== EVENT FILTER ===== */
+/* EVENT FILTER */
 document.addEventListener("DOMContentLoaded", () => {
     const categoryFilter = document.getElementById('category-filter');
     const searchInput = document.getElementById('search-input');

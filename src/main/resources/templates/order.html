@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<!-- ===== OVERLAY CHỌN BÀN (lần đầu vào) ===== -->
+<!-- CHỌN BÀN (lần đầu vào) -->
 <div class="table-overlay" id="table-overlay">
     <div class="table-modal">
         <h2>👋 Chào mừng!</h2>
@@ -22,7 +22,7 @@
     </div>
 </div>
 
-<!-- ===== HEADER ===== -->
+<!-- HEADER -->
 <header class="order-header">
     <div class="header-brand">
         <span class="dot"></span>
@@ -30,7 +30,7 @@
     </div>
 
     <div class="header-table-badge" id="header-table-badge" style="display:none">
-        <!-- JS sẽ điền tên bàn vào đây -->
+        <!-- Js sẽ điền tên bàn vào đây -->
     </div>
 
     <button class="cart-toggle-btn" onclick="toggleCart()">
@@ -39,7 +39,7 @@
     </button>
 </header>
 
-<!-- ===== MAIN CONTENT ===== -->
+<!-- MAIN CONTENT -->
 <main class="order-main" id="order-main">
 
     <!-- Hero -->
@@ -51,6 +51,28 @@
     <!-- Menu Grid -->
     <section class="menu-section">
         <p class="menu-section-title">Tất cả món ăn</p>
+
+        <div class="filter-bar">
+            <select id="category-filter" class="filter-btn">
+                <option value="">Tất cả</option>
+                <option value="COM">Cơm</option>
+                <option value="BUN_PHO">Bún/Phở</option>
+                <option value="BANH_MI">Bánh mì</option>
+                <option value="LAU_NUONG">Lẩu/Nướng</option>
+                <option value="DO_UONG">Đồ uống</option>
+                <option value="AN_VAT">Ăn vặt</option>
+                <option value="TRANG_MIENG">Tráng miệng</option>
+            </select>
+
+            <input
+                    type="text"
+                    id="search-input"
+                    placeholder="Tìm món..."
+                    class="filter-btn"
+                    style="flex:1"
+            >
+        </div>
+
         <div class="menu-grid" id="menu-grid">
             <p style="color:var(--text-muted)">Đang tải thực đơn...</p>
         </div>
@@ -58,7 +80,7 @@
 
 </main>
 
-<!-- ===== CART SIDEBAR ===== -->
+<!-- CART SIDEBAR -->
 <div class="cart-sidebar" id="cart-sidebar">
     <div class="cart-header">
         <h3>🛒 Giỏ hàng của bạn</h3>
@@ -84,7 +106,7 @@
     </div>
 </div>
 
-<!-- ===== TOAST NOTIFICATION ===== -->
+<!-- TOAST NOTIFICATION -->
 <div class="toast" id="toast"></div>
 
 <script th:src="@{/js/order.js}"></script>

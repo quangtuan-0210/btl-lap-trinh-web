@@ -58,9 +58,7 @@ public class MonAnService {
             throw new AppException(ErrorCode.MON_AN_NOT_FOUND);
         }
 
-        // xóa chi tiết hóa đơn trước
         cthdRepository.deleteByMonAnId(id);
-
         // xóa món ăn
         repository.deleteById(id);
     }

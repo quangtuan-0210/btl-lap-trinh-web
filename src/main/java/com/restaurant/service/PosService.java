@@ -116,7 +116,6 @@ public class PosService {
         HoaDon hoaDon = cthd.getHoaDon();
         cthdRepository.delete(cthd);
 
-        // Sau khi xóa, nếu hóa đơn không còn món nào, chuyển bàn về TRỐNG
         List<CTHD> remaining = cthdRepository.findByHoaDon(hoaDon);
         if (remaining.isEmpty()) {
             Ban ban = hoaDon.getBan();
