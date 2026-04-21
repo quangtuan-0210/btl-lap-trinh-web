@@ -1,87 +1,84 @@
-DROP DATABASE IF EXISTS restaurant_db;
-CREATE DATABASE restaurant_db;
-USE restaurant_db;
 
 -- ==========================================
 -- 1. TẠO CÁC BẢNG DỮ LIỆU
 -- ==========================================
 CREATE TABLE ban (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    ten_ban VARCHAR(255),
-    trang_thai VARCHAR(50) DEFAULT 'TRONG'
+                     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                     ten_ban VARCHAR(255),
+                     trang_thai VARCHAR(50) DEFAULT 'TRONG'
 );
 
 CREATE TABLE mon_an (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    ten_mon VARCHAR(255),
-    gia DOUBLE,
-    active BOOLEAN DEFAULT TRUE,
-    image_url VARCHAR(1000),
-    category VARCHAR(50)
+                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        ten_mon VARCHAR(255),
+                        gia DOUBLE,
+                        active BOOLEAN DEFAULT TRUE,
+                        image_url VARCHAR(1000),
+                        category VARCHAR(50)
 );
 
 CREATE TABLE nguoi_dung (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(255),
-    email VARCHAR(255),
-    password VARCHAR(255),
-    role VARCHAR(50)
+                            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                            username VARCHAR(255),
+                            email VARCHAR(255),
+                            password VARCHAR(255),
+                            role VARCHAR(50)
 );
 
 CREATE TABLE hoa_don (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    ban_id BIGINT,
-    thoi_diem_mo DATETIME,
-    thoi_diem_thanh_toan DATETIME,
-    trang_thai VARCHAR(50),
-    tong_tien DOUBLE,
-    FOREIGN KEY (ban_id) REFERENCES ban(id)
+                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                         ban_id BIGINT,
+                         thoi_diem_mo DATETIME,
+                         thoi_diem_thanh_toan DATETIME,
+                         trang_thai VARCHAR(50),
+                         tong_tien DOUBLE,
+                         FOREIGN KEY (ban_id) REFERENCES ban(id)
 );
 
 CREATE TABLE cthd (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    hoa_don_id BIGINT,
-    mon_an_id BIGINT,
-    so_luong INT,
-    don_gia DOUBLE,
-    FOREIGN KEY (hoa_don_id) REFERENCES hoa_don(id),
-    FOREIGN KEY (mon_an_id) REFERENCES mon_an(id)
+                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                      hoa_don_id BIGINT,
+                      mon_an_id BIGINT,
+                      so_luong INT,
+                      don_gia DOUBLE,
+                      FOREIGN KEY (hoa_don_id) REFERENCES hoa_don(id),
+                      FOREIGN KEY (mon_an_id) REFERENCES mon_an(id)
 );
 
 -- ==========================================
 -- 2. THÊM DỮ LIỆU (BÀN, NGƯỜI DÙNG)
 -- ==========================================
 INSERT INTO ban (ten_ban, trang_thai) VALUES
-('Bàn số 1', 'TRONG'), ('Bàn số 2', 'TRONG'), ('Bàn số 3', 'TRONG'), ('Bàn số 4', 'TRONG'), ('Bàn số 5', 'TRONG'),
-('Bàn số 6', 'TRONG'), ('Bàn số 7', 'TRONG'), ('Bàn số 8', 'TRONG'), ('Bàn số 9', 'TRONG'), ('Bàn số 10', 'TRONG');
+                                          ('Bàn số 1', 'TRONG'), ('Bàn số 2', 'TRONG'), ('Bàn số 3', 'TRONG'), ('Bàn số 4', 'TRONG'), ('Bàn số 5', 'TRONG'),
+                                          ('Bàn số 6', 'TRONG'), ('Bàn số 7', 'TRONG'), ('Bàn số 8', 'TRONG'), ('Bàn số 9', 'TRONG'), ('Bàn số 10', 'TRONG');
 
 INSERT INTO nguoi_dung (username, email, password, role) VALUES
-('admin1', 'admin1@gmail.com', '123456', 'ADMIN'),
-('admin2', 'admin2@gmail.com', '123456', 'ADMIN'),
-('staff1', 'staff1@gmail.com', '123456', 'STAFF'),
-('staff2', 'staff2@gmail.com', '123456', 'STAFF'),
-('staff3', 'staff3@gmail.com', '123456', 'STAFF');
+                                                             ('admin1', 'admin1@gmail.com', '123456', 'ADMIN'),
+                                                             ('admin2', 'admin2@gmail.com', '123456', 'ADMIN'),
+                                                             ('staff1', 'staff1@gmail.com', '123456', 'STAFF'),
+                                                             ('staff2', 'staff2@gmail.com', '123456', 'STAFF'),
+                                                             ('staff3', 'staff3@gmail.com', '123456', 'STAFF');
 
 -- ==========================================
 -- 3. THÊM DỮ LIỆU MÓN ĂN
 -- ==========================================
 INSERT INTO mon_an (ten_mon, gia, active) VALUES
-('cơm rang',30000,1), ('phở bò',40000,1), ('bún chả',45000,1), ('Trà đá',5000,1), ('coca',15000,1),
-('Bia Hà Nội',20000,1), ('Bò lúc lắc',120000,1), ('Gà nướng mật ong',90000,1), ('Cá hồi áp chảo',150000,1), ('Mực chiên nước mắm',110000,1),
-('Tôm hấp bia',130000,1), ('Lẩu hải sản',200000,1), ('Cơm chiên hải sản',80000,1), ('Bún riêu',35000,1), ('Phở gà',40000,1),
-('Trà đào',25000,1), ('Matcha đá xay',45000,1), ('Sinh tố bơ',30000,1), ('Cơm gà xối mỡ',50000,1), ('Cơm sườn nướng',55000,1),
-('Cơm bò xào',60000,1), ('Cơm trứng chiên',30000,1), ('Cơm cá kho',45000,1), ('Bún bò Huế',40000,1), ('Hủ tiếu Nam Vang',42000,1),
-('Mì quảng',40000,1), ('Bánh mì thịt',20000,1), ('Bánh mì chả cá',25000,1), ('Bánh mì trứng',18000,1), ('Bánh mì bò kho',30000,1),
-('Gà rán giòn',70000,1), ('Gà sốt cay',75000,1), ('Gà chiên mắm',80000,1), ('Cánh gà chiên nước mắm',85000,1), ('Lẩu thái',180000,1),
-('Lẩu bò',170000,1), ('Lẩu gà lá é',160000,1), ('Mực nướng sa tế',120000,1), ('Tôm nướng muối ớt',140000,1), ('Cá nướng giấy bạc',130000,1),
-('Cơm chiên dương châu',70000,1), ('Cơm chiên cá mặn',75000,1), ('Cơm chiên bò',80000,1), ('Mì xào hải sản',90000,1), ('Mì xào bò',85000,1),
-('Miến xào cua',95000,1), ('Bún thịt nướng',45000,1), ('Bún chả Hà Nội',50000,1), ('Bún mắm',55000,1), ('Cháo gà',30000,1),
-('Cháo lòng',35000,1), ('Cháo hải sản',50000,1), ('Khoai tây chiên',30000,1), ('Khoai lang chiên',30000,1), ('Phô mai que',35000,1),
-('Pepsi',10000,1), ('7Up',10000,1), ('Nước suối',8000,1), ('Nước cam',25000,1), ('Nước chanh',20000,1),
-('Nước ép dứa',25000,1), ('Sinh tố xoài',30000,1), ('Sinh tố dâu',35000,1), ('Cafe đen',15000,1), ('Cafe sữa',20000,1),
-('Bạc xỉu',25000,1), ('Capuccino',40000,1), ('Latte',45000,1), ('Trà sữa truyền thống',25000,1), ('Trà sữa trân châu',30000,1),
-('Trà sữa matcha',35000,1), ('Trà sữa socola',35000,1), ('Kem vani',20000,1), ('Kem socola',20000,1), ('Kem dâu',20000,1),
-('Bánh flan',15000,1), ('Rau câu dừa',15000,1);
+                                              ('cơm rang',30000,1), ('phở bò',40000,1), ('bún chả',45000,1), ('Trà đá',5000,1), ('coca',15000,1),
+                                              ('Bia Hà Nội',20000,1), ('Bò lúc lắc',120000,1), ('Gà nướng mật ong',90000,1), ('Cá hồi áp chảo',150000,1), ('Mực chiên nước mắm',110000,1),
+                                              ('Tôm hấp bia',130000,1), ('Lẩu hải sản',200000,1), ('Cơm chiên hải sản',80000,1), ('Bún riêu',35000,1), ('Phở gà',40000,1),
+                                              ('Trà đào',25000,1), ('Matcha đá xay',45000,1), ('Sinh tố bơ',30000,1), ('Cơm gà xối mỡ',50000,1), ('Cơm sườn nướng',55000,1),
+                                              ('Cơm bò xào',60000,1), ('Cơm trứng chiên',30000,1), ('Cơm cá kho',45000,1), ('Bún bò Huế',40000,1), ('Hủ tiếu Nam Vang',42000,1),
+                                              ('Mì quảng',40000,1), ('Bánh mì thịt',20000,1), ('Bánh mì chả cá',25000,1), ('Bánh mì trứng',18000,1), ('Bánh mì bò kho',30000,1),
+                                              ('Gà rán giòn',70000,1), ('Gà sốt cay',75000,1), ('Gà chiên mắm',80000,1), ('Cánh gà chiên nước mắm',85000,1), ('Lẩu thái',180000,1),
+                                              ('Lẩu bò',170000,1), ('Lẩu gà lá é',160000,1), ('Mực nướng sa tế',120000,1), ('Tôm nướng muối ớt',140000,1), ('Cá nướng giấy bạc',130000,1),
+                                              ('Cơm chiên dương châu',70000,1), ('Cơm chiên cá mặn',75000,1), ('Cơm chiên bò',80000,1), ('Mì xào hải sản',90000,1), ('Mì xào bò',85000,1),
+                                              ('Miến xào cua',95000,1), ('Bún thịt nướng',45000,1), ('Bún chả Hà Nội',50000,1), ('Bún mắm',55000,1), ('Cháo gà',30000,1),
+                                              ('Cháo lòng',35000,1), ('Cháo hải sản',50000,1), ('Khoai tây chiên',30000,1), ('Khoai lang chiên',30000,1), ('Phô mai que',35000,1),
+                                              ('Pepsi',10000,1), ('7Up',10000,1), ('Nước suối',8000,1), ('Nước cam',25000,1), ('Nước chanh',20000,1),
+                                              ('Nước ép dứa',25000,1), ('Sinh tố xoài',30000,1), ('Sinh tố dâu',35000,1), ('Cafe đen',15000,1), ('Cafe sữa',20000,1),
+                                              ('Bạc xỉu',25000,1), ('Capuccino',40000,1), ('Latte',45000,1), ('Trà sữa truyền thống',25000,1), ('Trà sữa trân châu',30000,1),
+                                              ('Trà sữa matcha',35000,1), ('Trà sữa socola',35000,1), ('Kem vani',20000,1), ('Kem socola',20000,1), ('Kem dâu',20000,1),
+                                              ('Bánh flan',15000,1), ('Rau câu dừa',15000,1);
 
 -- ==========================================
 -- 4. CẬP NHẬT HÌNH ẢNH MÓN ĂN
@@ -180,16 +177,16 @@ SET SQL_SAFE_UPDATES = 1;
 -- 6. THÊM DỮ LIỆU HÓA ĐƠN
 -- ==========================================
 INSERT INTO hoa_don (ban_id, thoi_diem_mo, thoi_diem_thanh_toan, trang_thai, tong_tien) VALUES
-(1, CONCAT(CURDATE(), ' 08:00:00'), CONCAT(CURDATE(), ' 09:00:00'), 'DA_THANH_TOAN', 150000),
-(2, CONCAT(CURDATE(), ' 10:00:00'), CONCAT(CURDATE(), ' 11:00:00'), 'DA_THANH_TOAN', 220000),
-(3, CONCAT(CURDATE(), ' 12:30:00'), CONCAT(CURDATE(), ' 13:15:00'), 'DA_THANH_TOAN', 180000),
-(4, CONCAT(CURDATE(), ' 18:00:00'), NULL, 'DANG_MO', 0),
-(1, CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 08:30:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 09:30:00'), 'DA_THANH_TOAN', 200000),
-(2, CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 12:00:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 13:00:00'), 'DA_THANH_TOAN', 300000),
-(3, CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 19:00:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 20:00:00'), 'DA_THANH_TOAN', 275000),
-(1, CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 07:45:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 08:30:00'), 'DA_THANH_TOAN', 120000),
-(2, CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 11:15:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 12:00:00'), 'DA_THANH_TOAN', 260000),
-(4, CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 18:30:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 19:30:00'), 'DA_THANH_TOAN', 310000);
+                                                                                            (1, CONCAT(CURDATE(), ' 08:00:00'), CONCAT(CURDATE(), ' 09:00:00'), 'DA_THANH_TOAN', 150000),
+                                                                                            (2, CONCAT(CURDATE(), ' 10:00:00'), CONCAT(CURDATE(), ' 11:00:00'), 'DA_THANH_TOAN', 220000),
+                                                                                            (3, CONCAT(CURDATE(), ' 12:30:00'), CONCAT(CURDATE(), ' 13:15:00'), 'DA_THANH_TOAN', 180000),
+                                                                                            (4, CONCAT(CURDATE(), ' 18:00:00'), NULL, 'DANG_MO', 0),
+                                                                                            (1, CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 08:30:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 09:30:00'), 'DA_THANH_TOAN', 200000),
+                                                                                            (2, CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 12:00:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 13:00:00'), 'DA_THANH_TOAN', 300000),
+                                                                                            (3, CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 19:00:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 20:00:00'), 'DA_THANH_TOAN', 275000),
+                                                                                            (1, CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 07:45:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 08:30:00'), 'DA_THANH_TOAN', 120000),
+                                                                                            (2, CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 11:15:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 12:00:00'), 'DA_THANH_TOAN', 260000),
+                                                                                            (4, CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 18:30:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 19:30:00'), 'DA_THANH_TOAN', 310000);
 USE restaurant_db;
 
 -- 1. TẮT CHẾ ĐỘ BẢO VỆ AN TOÀN
