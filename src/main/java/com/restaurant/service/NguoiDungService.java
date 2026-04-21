@@ -90,12 +90,12 @@ public class NguoiDungService {
                 throw new AppException(ErrorCode.UNAUTHENTICATED);
             }
         }
-        // NẾU MẬT KHẨU VẪN LÀ CHỮ THUẦN (Ví dụ: "123456")
+        // NẾU MẬT KHẨU VẪN LÀ CHỮ THUẦN
         else {
             if (!user.getPassword().equals(password)) {
                 throw new AppException(ErrorCode.UNAUTHENTICATED);
             }
-            // Tự động mã hóa mật khẩu và lưu đè lại vào DB cho các lần sau
+            // Tự động mã hóa mật khẩu và lưu đè lại vào DB
             user.setPassword(passwordEncoder.encode(password));
             nguoiDungRepository.save(user);
         }

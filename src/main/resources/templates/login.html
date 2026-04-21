@@ -13,7 +13,6 @@
             const user = JSON.parse(savedUser);
             const role = user?.role?.trim().toUpperCase();
 
-            // Dùng replace() để khóa luôn nút Back (Quay lại) của trình duyệt
             if (role === 'ADMIN') {
                 window.location.replace('/admin');
             } else if (role === 'STAFF') {
@@ -92,7 +91,6 @@
 
                 sessionStorage.setItem('posUser', JSON.stringify(user));
 
-                // Dùng replace() ở đây luôn cho đồng bộ
                 if (role === 'ADMIN') {
                     window.location.replace('/admin');
                 } else if (role === 'STAFF') {

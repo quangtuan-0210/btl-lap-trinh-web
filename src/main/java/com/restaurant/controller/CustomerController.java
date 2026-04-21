@@ -62,7 +62,6 @@ public class CustomerController {
             throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
 
-        // Validate từng món: số lượng phải từ 1 đến 30, món phải tồn tại và đang bán
         for (CustomerOrderItemRequest item : items) {
             if (item.getSoLuong() == null || item.getSoLuong() < 1 || item.getSoLuong() > 30) {
                 throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
@@ -82,8 +81,6 @@ public class CustomerController {
                 .findFirstByBanIdAndTrangThai(banId, TrangThaiHoaDon.CHUA_THANH_TOAN);
 
         HoaDon hoaDon;
-        // Bàn đang có người: gọi thêm món vào hóa đơn hiện tại
-        // Bàn trống: mở hóa đơn mới
         hoaDon = existingHoaDon.orElseGet(() -> posService.moBan(banId));
 
         // Thêm từng món vào hóa đơn

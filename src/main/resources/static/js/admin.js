@@ -17,7 +17,7 @@
 
 'use strict';
 
-/* ─── STATE ─────────────────────────────────────────── */
+/* STATE */
 const state = {
     user    : null,
     monAn   : [],
@@ -51,7 +51,7 @@ function renderUserInfo() {
     document.getElementById('sidebarRole').textContent     = u.role || 'Admin';
 }
 
-/* ─── NAVIGATION ─────────────────────────────────────── */
+/* NAVIGATION */
 const PAGE_META = {
     dashboard: { title: 'Dashboard',           crumb: 'Tổng quan hệ thống',       load: loadDashboard   },
     monan    : { title: 'Quản lý món ăn',      crumb: 'Thêm / sửa / xóa món ăn', load: loadMonAn       },
@@ -76,7 +76,7 @@ function switchPage(name, el) {
     }
 }
 
-/* ─── DASHBOARD ──────────────────────────────────────── */
+/* DASHBOARD */
 async function loadDashboard() {
     await Promise.all([loadMonAnForDash(), loadNhanVienForDash(), loadHoaDonForDash()]);
 }
@@ -121,7 +121,7 @@ async function loadHoaDonForDash() {
     document.getElementById('statDoanhThu').textContent = fmtVnd(total);
 }
 
-/* ─── MÓN ĂN ─────────────────────────────────────────── */
+/* MÓN ĂN */
 async function loadMonAn() {
     const list = await apiFetch('/api/admin/menu');
     state.monAn = list || [];
@@ -234,11 +234,8 @@ async function submitMonAn() {
 
     const body = { tenMon, gia, active, imageUrl, category };
 
-    // Backend chưa expose PUT /api/admin/menu/{id} — chỉ có POST và DELETE
-    // => Khi "sửa": xóa rồi tạo lại (workaround đến khi backend bổ sung PUT)
     try {
         if (id) {
-            // Cố gắng PUT trước (nếu backend thêm sau)
             const r = await fetch(`/api/admin/menu/${id}`, {
                 method : 'PUT',
                 headers: {'Content-Type': 'application/json'},
@@ -272,8 +269,7 @@ function confirmDeleteMonAn(id, name) {
     openModal('modalDelete');
 }
 
-/* ─── NHÂN VIÊN ──────────────────────────────────────── */
-/* ─── NHÂN VIÊN ──────────────────────────────────────── */
+/* NHÂN VIÊN */
 async function loadNhanVien() {
     try {
         const list = await apiFetch('/api/nhan-vien');
@@ -404,7 +400,7 @@ function confirmDeleteNhanVien(id, name) {
     openModal('modalDelete');
 }
 
-/* ─── HÓA ĐƠN ───────────────────────────────────────── */
+/* HÓA ĐƠN */
 async function loadHoaDon() {
     const dateVal = document.getElementById('filterDate').value;
     let url       = '/api/pos/hoa-don';
@@ -504,7 +500,7 @@ async function xemChiTiet(id) {
     }
 }
 
-/* ─── LOGOUT ─────────────────────────────────────────── */
+/* LOGOUT */
 async function doLogout() {
     try {
         await fetch('/api/auth/logout', { method: 'POST' });
@@ -513,7 +509,7 @@ async function doLogout() {
     window.location.href = '/login';
 }
 
-/* ─── MODAL HELPERS ──────────────────────────────────── */
+/* MODAL HELPERS */
 function openModal(id)  { document.getElementById(id).classList.add('show'); }
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
@@ -524,7 +520,7 @@ document.querySelectorAll('.modal-overlay').forEach(el => {
     });
 });
 
-/* ─── TOAST ──────────────────────────────────────────── */
+/* TOAST */
 function toast(msg, type = 'info') {
     const icons = { success: '✅', error: '❌', info: 'ℹ️' };
     const t     = document.createElement('div');
@@ -534,7 +530,7 @@ function toast(msg, type = 'info') {
     setTimeout(() => t.remove(), 3500);
 }
 
-/* ─── API HELPERS ────────────────────────────────────── */
+/* API HELPERS */
 async function apiFetch(url, options = {}) {
     // Lấy thẻ JWT từ túi ra
     const user = JSON.parse(sessionStorage.getItem('posUser'));
@@ -577,7 +573,7 @@ async function apiPost(url, body) {
     });
 }
 
-/* ─── FORMAT HELPERS ─────────────────────────────────── */
+/* FORMAT HELPERS */
 function fmtVnd(n) {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n || 0);
 }

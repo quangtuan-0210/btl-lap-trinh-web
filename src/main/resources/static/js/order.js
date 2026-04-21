@@ -1,10 +1,10 @@
-// ===== STATE =====
+// STATE
 let cart = {}; // { id: { ten, gia, soLuong } }
 let menuData = [];
 let banId = null;
 let banTen = null;
 
-// ===== INIT =====
+// INIT
 document.addEventListener('DOMContentLoaded', () => {
     const savedBanId = sessionStorage.getItem('datmon_banId');
     const savedBanTen = sessionStorage.getItem('datmon_banTen');
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('search-input')?.addEventListener('input', applyFilters);
 });
 
-// ===== BÀN =====
+// BÀN
 async function loadBanList() {
     try {
         const res = await fetch('/api/customer/ban');
@@ -61,7 +61,7 @@ function chonBan(id, ten) {
     document.getElementById('table-overlay')?.classList.add('hidden');
 }
 
-// ===== HEADER BÀN (dropdown) =====
+// HEADER BÀN
 function showTableBadge(ten) {
     const badge = document.getElementById('header-table-badge');
 
@@ -121,7 +121,7 @@ document.addEventListener('click', function (e) {
     }
 });
 
-// ===== MENU =====
+// MENU
 async function loadMenu() {
     try {
         const res = await fetch('/api/customer/menu');
@@ -154,7 +154,6 @@ function applyFilters() {
     renderMenu(filtered);
 }
 
-// ⭐ FIX CHUẨN UI + IMAGE + BADGE
 function renderMenu(list) {
     const grid = document.getElementById('menu-grid');
     grid.innerHTML = '';
@@ -194,7 +193,7 @@ function renderMenu(list) {
     });
 }
 
-// ===== CART =====
+// CART
 function addToCart(id, ten, gia) {
     if (!banId) {
         alert('Vui lòng chọn bàn trước!');
@@ -227,7 +226,7 @@ function updateQtyBadge(id) {
     el.classList.toggle('show', qty > 0);
 }
 
-// ⭐ FIX FULL GIỎ HÀNG
+// GIỎ HÀNG
 function updateCartUI() {
     const keys = Object.keys(cart);
 
@@ -254,17 +253,16 @@ function updateCartUI() {
         `).join('');
     }
 
-    // ⭐ QUAN TRỌNG
     const btn = document.getElementById('submit-btn');
     if (btn) btn.disabled = keys.length === 0;
 }
 
-// ===== CART UI =====
+// CART UI
 function toggleCart() {
     document.getElementById('cart-sidebar')?.classList.toggle('open');
 }
 
-// ===== SUBMIT =====
+// SUBMIT
 async function submitOrder() {
     if (!banId) {
         alert('Chưa chọn bàn');
@@ -299,7 +297,7 @@ async function submitOrder() {
     }
 }
 
-// ===== UTIL =====
+// UTIL
 function formatPrice(n) {
     return new Intl.NumberFormat('vi-VN', {
         style: 'currency',

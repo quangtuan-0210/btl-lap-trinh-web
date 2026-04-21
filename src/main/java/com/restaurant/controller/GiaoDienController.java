@@ -8,26 +8,26 @@ public class GiaoDienController {
 
     @GetMapping("/")
     public String trangChu() {
-        return "index"; // Trỏ đúng tên file index.html trong templates
+        return "index";
     }
 
     @GetMapping("/login")
     public String dangNhap() {
-        return "login"; // Trỏ đúng tên file login.html
+        return "login";
     }
 
     @GetMapping("/admin")
     public String trangAdmin() {
-        return "admin"; // Trỏ đúng tên file admin.html
+        return "admin";
     }
 
     @GetMapping("/cashier")
     public String trangThuNgan() {
-        return "cashier"; // Trỏ đúng tên file cashier.html
+        return "cashier";
     }
 
     @GetMapping("/order")
     public String trangDatMon() {
-        return "order"; // Trang đặt món cho khách hàng
+        return "order";
     }
 }
