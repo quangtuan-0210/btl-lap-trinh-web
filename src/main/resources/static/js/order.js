@@ -72,7 +72,6 @@ function showTableBadge(ten) {
         </div>
 
         <div class="table-dropdown" id="table-dropdown">
-            <div class="dropdown-item" onclick="changeTable()">🔄 Đổi bàn</div>
             <div class="dropdown-item danger" onclick="leaveTable()">❌ Thoát bàn</div>
         </div>
     `;

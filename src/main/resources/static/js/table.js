@@ -33,7 +33,8 @@ async function loadTables() {
             div.innerText = t.tenBan;
 
             div.onclick = async () => {
-                if (isOpeningTable) return;
+                if (isOpeningTable)
+                    return;
                 isOpeningTable = true;
                 currentTableId = t.id;
                 currentHoaDonId = null;
@@ -64,7 +65,8 @@ async function loadTables() {
 
 // Load bill
 async function loadBillFromServer() {
-    if (!currentHoaDonId) return;
+    if (!currentHoaDonId)
+        return;
     try {
         const result = await apiFetch(`/api/pos/hoa-don/${currentHoaDonId}`);
         renderBill(result || []);
@@ -161,8 +163,10 @@ function renderBill(items) {
 
 //Thanh toán
 async function handlePayment() {
-    if (!currentHoaDonId || isOpeningTable) return;
-    if (!confirm("Xác nhận thanh toán?")) return;
+    if (!currentHoaDonId || isOpeningTable)
+        return;
+    if (!confirm("Xác nhận thanh toán?"))
+        return;
     try {
         await apiFetch(`/api/pos/thanh-toan/${currentHoaDonId}`, { method: 'POST' });
         alert("Thanh toán xong!");
