@@ -33,10 +33,20 @@
         <!-- Js sẽ điền tên bàn vào đây -->
     </div>
 
-    <button class="cart-toggle-btn" onclick="toggleCart()">
-        🛒 Giỏ hàng
-        <span class="cart-count" id="cart-count">0</span>
-    </button>
+    <div style="display:flex;align-items:center;gap:12px">
+
+        <!-- 💰 TỔNG BILL -->
+        <div class="header-bill-total">
+            💰 <span id="header-bill-total">0 ₫</span>
+        </div>
+
+        <!-- 🛒 GIỎ HÀNG -->
+        <button class="cart-toggle-btn" onclick="toggleCart()">
+            🛒 Giỏ hàng
+            <span class="cart-count" id="cart-count">0</span>
+        </button>
+
+    </div>
 </header>
 
 <!-- MAIN CONTENT -->
@@ -82,28 +92,57 @@
 
 <!-- CART SIDEBAR -->
 <div class="cart-sidebar" id="cart-sidebar">
+
+    <!-- HEADER -->
     <div class="cart-header">
-        <h3>🛒 Giỏ hàng của bạn</h3>
+        <h3>🛒 Giỏ hàng</h3>
         <button class="cart-close-btn" onclick="toggleCart()">✕</button>
     </div>
 
-    <div class="cart-items" id="cart-items-list">
-        <div class="cart-empty">
-            <span class="cart-empty-icon">🛒</span>
-            <p>Giỏ hàng trống</p>
-            <span style="font-size:0.82rem;color:var(--text-muted)">Chọn món để bắt đầu</span>
-        </div>
+    <!-- TAB -->
+    <div class="cart-tabs">
+        <button class="tab-btn active" onclick="switchTab('cart', event)">Giỏ hàng</button>
+        <button class="tab-btn" onclick="switchTab('bill', event)">Hóa đơn</button>
     </div>
 
-    <div class="cart-footer">
-        <div class="cart-total-row">
-            <span class="cart-total-label">Tổng cộng</span>
-            <span class="cart-total-price" id="cart-total">0 ₫</span>
+    <!-- TAB: GIỎ HÀNG -->
+    <div id="cart-tab" class="tab-content active">
+
+        <div class="cart-items" id="cart-items-list">
+            <div class="cart-empty">
+                <span class="cart-empty-icon">🛒</span>
+                <p>Giỏ hàng trống</p>
+            </div>
         </div>
-        <button class="order-submit-btn" id="submit-btn" onclick="submitOrder()" disabled>
-            Xác nhận đặt món
-        </button>
+
+        <div class="cart-footer">
+            <div class="cart-total-row">
+                <span class="cart-total-label">Tổng cộng</span>
+                <span class="cart-total-price" id="cart-total">0 ₫</span>
+            </div>
+            <button class="order-submit-btn" id="submit-btn" onclick="submitOrder()" disabled>
+                Xác nhận đặt món
+            </button>
+        </div>
+
     </div>
+
+    <!-- TAB: HÓA ĐƠN -->
+    <div id="bill-tab" class="tab-content">
+
+        <div class="cart-items" id="bill-items">
+            <p style="padding:10px;color:gray">Chưa có dữ liệu</p>
+        </div>
+
+        <div class="cart-footer">
+            <div class="cart-total-row">
+                <span>Tổng hóa đơn</span>
+                <span id="bill-total">0 ₫</span>
+            </div>
+        </div>
+
+    </div>
+
 </div>
 
 <!-- TOAST NOTIFICATION -->
