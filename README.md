@@ -11,7 +11,7 @@
 
 ## 🚀 Công nghệ sử dụng
 
-* **Backend:** Java 17, Spring Boot 3.x, Spring Data JPA.
+* **Backend:** Java 21, Spring Boot 3.x, Spring Data JPA.
 * **Frontend:** HTML5, CSS3, JavaScript, Thymeleaf (Server-side rendering).
 * **Database:** MySQL.
 * **Bảo mật:** Spring Security, JSON Web Token (JWT).
