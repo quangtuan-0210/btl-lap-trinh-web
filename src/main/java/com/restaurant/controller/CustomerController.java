@@ -5,6 +5,7 @@ import com.restaurant.dto.request.GoiMonRequest;
 import com.restaurant.dto.response.ApiResponse;
 import com.restaurant.dto.response.BanResponse;
 import com.restaurant.dto.response.MonAnResponse;
+import com.restaurant.entity.CTHD;
 import com.restaurant.entity.HoaDon;
 import com.restaurant.entity.TrangThaiHoaDon;
 import com.restaurant.exception.AppException;
@@ -96,6 +97,29 @@ public class CustomerController {
                 .code(ErrorCode.SUCCESS.getCode())
                 .message("Đặt món thành công! Nhân viên sẽ phục vụ bạn trong giây lát.")
                 .result(null)
+                .build();
+    }
+    @GetMapping("/hoa-don/{banId}")
+    public ApiResponse<List<CTHD>> getHoaDonTheoBan(@PathVariable Long banId) {
+
+        // tìm hóa đơn chưa thanh toán của bàn
+        Optional<HoaDon> hoaDonOpt = hoaDonRepository
+                .findFirstByBanIdAndTrangThai(banId, TrangThaiHoaDon.CHUA_THANH_TOAN);
+
+        if (hoaDonOpt.isEmpty()) {
+            return ApiResponse.<List<CTHD>>builder()
+                    .code(ErrorCode.SUCCESS.getCode())
+                    .result(List.of()) // 👈 QUAN TRỌNG: trả rỗng
+                    .build();
+        }
+
+        HoaDon hoaDon = hoaDonOpt.get();
+
+        List<CTHD> chiTiet = posService.getChiTietHoaDon(hoaDon.getId());
+
+        return ApiResponse.<List<CTHD>>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .result(chiTiet)
                 .build();
     }
 }

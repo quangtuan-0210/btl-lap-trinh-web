@@ -236,12 +236,10 @@ async function submitMonAn() {
 
     try {
         if (id) {
-            const r = await fetch(`/api/admin/menu/${id}`, {
-                method : 'PUT',
-                headers: {'Content-Type': 'application/json'},
-                body   : JSON.stringify(body)
+            await apiFetch(`/api/admin/menu/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(body)
             });
-            if (!r.ok) throw new Error('PUT not supported');
             toast('Cập nhật món ăn thành công!', 'success');
         } else {
             await apiPost('/api/admin/menu', body);

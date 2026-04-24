@@ -3,7 +3,7 @@ let cart = {}; // { id: { ten, gia, soLuong } }
 let menuData = [];
 let banId = null;
 let banTen = null;
-
+let currentBill = [];
 // INIT
 document.addEventListener('DOMContentLoaded', () => {
     const savedBanId = sessionStorage.getItem('datmon_banId');
@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
         banTen = savedBanTen;
         showTableBadge(banTen);
         document.getElementById('table-overlay')?.classList.add('hidden');
+        loadCustomerBill();
+
     } else {
         loadBanList();
     }
@@ -286,6 +288,8 @@ async function submitOrder() {
             body: JSON.stringify(payload)
         });
 
+        await loadCustomerBill();
+
         cart = {};
         updateCartUI();
         applyFilters();
@@ -302,4 +306,57 @@ function formatPrice(n) {
         style: 'currency',
         currency: 'VND'
     }).format(n);
+}
+function switchTab(tab, e) {
+    // Ẩn tất cả tab
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+    // Hiện tab được chọn
+    document.getElementById(`${tab}-tab`).classList.add('active');
+    e.target.classList.add('active');
+
+    // Nếu là tab hóa đơn → load data
+    if (tab === 'bill') {
+        loadCustomerBill();
+    }
+}
+async function loadCustomerBill() {
+    if (!banId) return;
+
+    try {
+        const res = await fetch(`/api/customer/hoa-don/${banId}`);
+        const data = await res.json();
+
+        currentBill = data.result || [];
+        renderCustomerBill();
+    } catch (e) {
+        console.error("Lỗi load hóa đơn:", e);
+    }
+}
+function renderCustomerBill() {
+    const container = document.getElementById('bill-items');
+    let total = 0;
+
+    if (!currentBill || currentBill.length === 0) {
+        container.innerHTML = `<p>Chưa có món</p>`;
+        document.getElementById('bill-total').innerText = '0 ₫';
+        return;
+    }
+
+    container.innerHTML = currentBill.map(item => {
+        const thanhTien = item.soLuong * item.donGia;
+        total += thanhTien;
+
+        return `
+            <div class="cart-item">
+                <div>${item.monAn?.tenMon || '???'}</div>
+                <div>x${item.soLuong}</div>
+                <div>${formatPrice(thanhTien)}</div>
+            </div>
+        `;
+    }).join('');
+
+    document.getElementById('bill-total').innerText = formatPrice(total);
+    document.getElementById('header-bill-total').innerText = formatPrice(total);
 }
