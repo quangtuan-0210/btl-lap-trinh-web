@@ -1,4 +1,4 @@
-# 🍽️ Hệ Thống Quản Lý Nhà Hàng (Restaurant POS)
+#  Hệ Thống Quản Lý Nhà Hàng (Restaurant POS)
 
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-F2F4F9?style=for-the-badge&logo=spring-boot)
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=white)
@@ -45,7 +45,7 @@ Hệ thống xoay quanh 5 luồng nghiệp vụ chính:
 
 ---
 
-## 📂 Cấu trúc dự án
+##  Cấu trúc dự án
 
 ```text
 src/main/java/com/restaurant
